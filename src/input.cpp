@@ -19,6 +19,8 @@ void NodeMidiInput::Init(v8::Local<v8::Object> target)
     t->SetClassName(Nan::New<v8::String>("NodeMidiInput").ToLocalChecked());
     t->InstanceTemplate()->SetInternalFieldCount(1);
 
+    Nan::SetPrototypeMethod(t, "release", Release);
+
     Nan::SetPrototypeMethod(t, "getPortCount", GetPortCount);
     Nan::SetPrototypeMethod(t, "getPortName", GetPortName);
 
@@ -120,6 +122,16 @@ NAN_METHOD(NodeMidiInput::New)
     input->Wrap(info.This());
 
     info.GetReturnValue().Set(info.This());
+}
+
+NAN_METHOD(NodeMidiInput::Release)
+{
+    Nan::HandleScope scope;
+    NodeMidiInput* input = Nan::ObjectWrap::Unwrap<NodeMidiInput>(info.This());
+    if (input->in) {
+      delete input->in;
+      input->in = nullptr;
+    }
 }
 
 NAN_METHOD(NodeMidiInput::GetPortCount)
